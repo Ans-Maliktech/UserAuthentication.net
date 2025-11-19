@@ -1,128 +1,108 @@
- <img align="left" width="116" height="116" src=".\doc\img\authApi_icon.png" />
+Secure User Identity Service (SUIS)
+
+Developed by: Ans Abdullah Malik
+
+This repository contains a full-stack, decoupled Authentication and Authorization system built using ASP.NET Core (.NET 9) for the backend API and Angular for the Single Page Application (SPA) frontend.
+
+It implements a modern JWT (JSON Web Token)-based authentication flow, ensuring stateless and secure identity management for any consumer application.
+
+🚀 Key Features
+
+Decoupled Architecture: Separate API and UI for flexible deployment.
+
+Persistent Database: Configured for SQL Server (LocalDB for development) using Entity Framework Core.
+
+Role-Based Access Control (RBAC): Supports user roles for differentiated authorization.
+
+CORS Configuration: Properly configured to allow secure communication between the Angular frontend and the ASP.NET Core backend on local development ports.
+
+🛠️ Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+.NET SDK 9.0 (or the latest version compatible with your project).
+
+Node.js and npm (LTS version is recommended).
+
+[SQL Server LocalDB] (usually installed with Visual Studio or SQL Server Express).
+
+📦 Project Structure
+
+The solution is divided into three main folders under src:
+
+Auth.Api: The ASP.NET Core API entry point. Handles routing, authentication middleware, and configuration.
+
+Auth.Infrastructure: Contains database context, Entity Framework migrations, repositories, and service implementations.
+
+Auth.Frontend: The Angular client application (SPA).
+
+⚙️ Setup and Running Locally
+
+Step 1: Backend Setup (Auth.Api)
+
+Navigate to the API Directory:
+
+cd D:\Projects\Authapi\AuthApi\src\Auth.Api
 
 
-# Clean Architecture AuthApi
-[![.NET Build and Test](https://github.com/Gramli/AuthApi/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Gramli/AuthApi/actions/workflows/dotnet.yml)
-[![Angular Build](https://github.com/Gramli/AuthApi/actions/workflows/angular.yml/badge.svg)](https://github.com/Gramli/AuthApi/actions/workflows/angular.yml)
+Install EF Core Tool (if necessary):
+If the dotnet ef command fails, you need to install the tool (or reference it locally, as discussed):
 
-This full-stack solution demonstrates user registration, login, and role-based access control using Angular and .NET. The backend showcases **Authentication** and **Authorization** with **JWT tokens**, demonstrating the use of Authorization policies in **minimal API** endpoints, adding custom claims through middleware, and an example of using **HTTP response caching** via an extension method. These are all implemented following Clean Architecture and various design patterns. The frontend illustrates managing JWT tokens using **guards** and **interceptors**, with all components implemented as **standalone components** and **signals**.
+dotnet tool install --global dotnet-ef
 
 
-Example API allows to: 
- * **register** user
- * **login** user
- * **change user role**
- * get user and service info
+Ensure SQL Server Package is Installed:
+If you faced errors before, use the explicit version for .NET 9.0:
 
-Endpoints use different types of authorization policies.
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 9.0.0-rc.2.24529.15
 
-# Menu
-- [Clean Architecture AuthApi](#clean-architecture-authapi)
-- [Menu](#menu)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Get Started](#get-started)
-  - [Run Solution](#run-solution)
-  - [Test Using SwaggerUI](#test-using-swaggerui)
-  - [Test Using .http file (VS2022)](#test-using-http-file-vs2022)
-- [Motivation](#motivation)
-  - [Backend Architecture](#backend-architecture)
-    - [Key Patterns and Decisions:](#key-patterns-and-decisions)
-    - [Features](#features)
-  - [Frontend Structure](#frontend-structure)
-    - [JWT Handling](#jwt-handling)
-  - [Technologies](#technologies)
 
-# Prerequisites
-* **.NET SDK 9.0+**
-* **Angular CLI 19+**
-* **Node.js 20.11.1+**
+Apply Database Migrations:
+This command reads the schema and creates the AuthDb database and its tables on your LocalDB instance:
 
-# Installation
-To install the project using Git Bash:
+dotnet ef database update
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Gramli/AuthApi.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd AuthApi/src
-   ```
-3. Install the backend dependencies:
-   ```bash
-   dotnet restore
-   ```
-4. Navigate to the frontend directory and install dependencies:
-   ```bash
-   cd Auth.Frontend
-   npm install
-   ```
 
-# Get Started
+Run the API:
 
-## Run Solution
-**Expected IDE**
-- **Backend**: Visual Studio 2019+ or JetBrains Rider 2024.2.7+
-- **Frontend**: Visual Studio Code 1.94.2+ or WebStorm 2024.2.4+
+dotnet run
 
-1. **Run Frontend**
-    1. Open the **Auth.Frontend** project folder:
-       - In WebStorm, use the run or debug button to start the project.
-       - In VS Code, run the project in the terminal using the command `ng serve`.
-    2. In your browser, navigate to [http://localhost:4200/](http://localhost:4200/).
 
-2. **Run Backend**
-    1. Open the **AuthSol.sln** project in Rider or Visual Studio.
-    2. Use the run button to start the backend project.
+The API should start and listen on http://localhost:5166.
 
-3. Once both the frontend and backend are running, you’re all set to start using the app. Enjoy! :)
+Step 2: Frontend Setup (Auth.Frontend)
 
-## Test Using SwaggerUI
-Select the **Auth.API** startup item in VS or Rider and try it.
+Navigate to the Frontend Directory:
 
-![SwaggerUI](./doc/img/login.gif)
+cd D:\Projects\Authapi\AuthApi\src\Auth.Frontend
 
-## Test Using .http file (VS2022)
- * Go to Tests/HttpDebugTests folder and open **debug-tests.http** file in VS2022
- * Send Login request
- * Obtain jwtToken from response and use it in another requests in Authorization header
 
-# Motivation
-The primary goal of this project is to create a practical example of authorization and authentication using Minimal API and Clean Architecture, while also enhancing my skills with Angular.
+Install Dependencies:
 
-## Backend Architecture
-The backend follows **[Clean Architecture](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures#clean-architecture)**, with the application layer split into **Core** and **Domain** projects:
-- The **Core** project contains business rules.
-- The **Domain** project holds business entities.
+npm install
 
-### Key Patterns and Decisions:
-- **CQRS Pattern**: Separates handlers into commands and queries, with repositories structured similarly.
-- **No MediatR**: Minimal API supports injecting handlers directly into endpoint map methods, eliminating the need for **[MediatR](https://github.com/jbogard/MediatR)**.
-- **Result Pattern**: Uses the **[Result pattern](https://www.forevolve.com/en/articles/2018/03/19/operation-result/)** (via [FluentResults package](https://github.com/altmann/FluentResults)) instead of throwing exceptions. Each handler returns an `HttpDataResponse` object containing data, error messages, and the HTTP response code.
 
-### Features
-- **Response caching** - adding http response caching using extension method *AddResponseCachePolicy*
-- **Claims Middleware** - adding custom claims through middleware *ClaimsMiddleware*
+Run the Angular Application:
 
-## Frontend Structure
-The Angular frontend is organized into two main folders:
-- **Core**: Contains "feature" components (each with specific feature logic).
-- **Shared**: Stores common components, services, and extensions shared between feature components.
+ng serve --open
 
-### JWT Handling
-This example demonstrates JWT token management on the client side. After obtaining the token from the API, it is stored in local storage via the **JwtTokenService**. The **AuthorizeGuard** checks if the client already has a token to protect routes, and **authInterceptor** automatically adds the token header to every request.
 
-The project uses **PrimeNG** and **PrimeFlex** for styling and layout.
+The frontend should open in your browser at http://localhost:4200.
 
-## Technologies
-* [ASP.NET Core 9](https://learn.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-9.0)
-* [Entity Framework Core InMemory](https://learn.microsoft.com/en-us/ef/core/providers/in-memory/?tabs=dotnet-core-cli)
-* [Mapster](https://github.com/MapsterMapper/Mapster)
-* [SmallApiToolkit](https://github.com/Gramli/SmallApiToolkit)
-* [FluentResuls](https://github.com/altmann/FluentResults)
-* [Validot](https://github.com/bartoszlenar/Validot)
-* [GuardClauses](https://github.com/ardalis/GuardClauses)
-* [Angular 19](https://angular.dev)
-* [PrimeNG](https://primeng.org)
-* [PrimeFlex](https://primeflex.org)
+🧪 Testing and Verification
+
+Register: Navigate to the registration page (/register) and create a new user.
+
+Database Check: Because you have a persistent database, you can stop the API and restart it.
+
+Login: Log in with the account you just created.
+
+Dashboard: Successful login should redirect you to a dashboard showing the protected user information, confirming successful authentication and authorization.
+
+🔒 Configuration Notes
+
+Connection String: The default connection string is configured in Auth.Api/appsettings.json to use SQL Server LocalDB. This must be updated for any production or shared environment.
+
+JWT Key: The key in Auth.Api/appsettings.json is a placeholder. It must be updated to a secure, long, randomly generated key before deployment.
+
+CORS URLs: The CORS section is currently set to allow only localhost:4200. This must be updated to include the client's production domain when deployin

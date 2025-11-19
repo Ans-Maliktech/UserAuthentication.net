@@ -1,7 +1,7 @@
 using Auth.Api.Configuration;
 using Auth.Api.EndpointBuilders;
 using Auth.Api.Midllewares;
-using Auth.Core.Configuration;
+using Auth.Core.Configuration;  
 using Auth.Infrastructure.Configuration;
 using SmallApiToolkit.Extensions;
 using SmallApiToolkit.Middleware;

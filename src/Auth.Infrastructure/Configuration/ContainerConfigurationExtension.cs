@@ -24,7 +24,7 @@ namespace Auth.Infrastructure.Configuration
 
             return serviceCollection
                 .RegisterMapsterConfiguration()
-                .AddDatabase()
+                .AddDatabase() // 🟢 REVERTED: No longer passing configuration
                 .AddServices();
         }
 
@@ -47,9 +47,10 @@ namespace Auth.Infrastructure.Configuration
             return serviceCollection;
         }
 
+        // 🟢 REVERTED: Switched back to In-Memory Database for simple delivery
         private static IServiceCollection AddDatabase(this IServiceCollection serviceCollection)
             => serviceCollection
-                .AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("Users"))
+                .AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("Users")) 
                 .AddScoped<Abstractions.IUserQueriesRepository, UserQueriesRepository>()
                 .AddScoped<Core.Abstractions.Repositories.IUserQueriesRepository, UserQueriesRepository>()
                 .AddScoped<Abstractions.IUserCommandsRepository, UserCommandsRepository>()
