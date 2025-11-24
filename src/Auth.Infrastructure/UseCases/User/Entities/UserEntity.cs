@@ -1,11 +1,20 @@
-﻿namespace Auth.Infrastructure.UseCases.User.Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Auth.Infrastructure.UseCases.User.Entities
 {
-    internal class UserEntity
+    public class UserEntity
     {
-        public int Id { get; init; }
-        public required string Username { get; init; }
-        public required string Password { get; init; }
-        public required string Email { get; init; }
-        public required RoleEntity Role { get; set; }
+        public int Id { get; set; }
+        public string Username { get; set; } = string.Empty;
+        
+        // *** ADDED THESE 2 PROPERTIES ***
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+
+        public int RoleId { get; set; }
+
+        // initialized with 'null!' to silence the "Non-nullable" warning
+        public RoleEntity Role { get; set; } = null!; 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Auth.Core.Abstractions.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Auth.Core.Abstractions.Repositories;
 using Auth.Core.Abstractions.Services;
 using Auth.Domain.UseCases.User.Commands;
 using Auth.Domain.UseCases.User.Dto;
@@ -9,7 +10,7 @@ using Auth.Infrastructure.Services;
 using Auth.Infrastructure.UseCases.User.Entities;
 using Auth.Infrastructure.UseCases.User.Repositories;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
+// using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,14 +18,15 @@ namespace Auth.Infrastructure.Configuration
 {
     public static class ContainerConfigurationExtension
     {
+        // Must accept IConfiguration to get the connection string
         public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            //just for example purpose => security issue, jwt secret is NOT in app config!
+            // Configure JWT Options
             serviceCollection.Configure<TokenOptions>(configuration.GetSection("jwt"));
 
             return serviceCollection
                 .RegisterMapsterConfiguration()
-                .AddDatabase() // 🟢 REVERTED: No longer passing configuration
+                .AddDatabase(configuration) // Pass configuration to AddDatabase
                 .AddServices();
         }
 
@@ -47,10 +49,15 @@ namespace Auth.Infrastructure.Configuration
             return serviceCollection;
         }
 
-        // 🟢 REVERTED: Switched back to In-Memory Database for simple delivery
-        private static IServiceCollection AddDatabase(this IServiceCollection serviceCollection)
-            => serviceCollection
-                .AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("Users")) 
+        // Now accepts IConfiguration
+        private static IServiceCollection AddDatabase(this IServiceCollection serviceCollection, IConfiguration configuration)
+        {
+            // Read the connection string "DefaultConnection" from appsettings.json
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            return serviceCollection
+                // Configure DbContext to use SQL Server with the connection string
+                .AddDbContext<UserContext>(opt => opt.UseSqlServer(connectionString))
                 .AddScoped<Abstractions.IUserQueriesRepository, UserQueriesRepository>()
                 .AddScoped<Core.Abstractions.Repositories.IUserQueriesRepository, UserQueriesRepository>()
                 .AddScoped<Abstractions.IUserCommandsRepository, UserCommandsRepository>()
@@ -58,5 +65,6 @@ namespace Auth.Infrastructure.Configuration
                 .AddScoped<Core.Abstractions.Repositories.IRoleQueriesRepository, RoleQueriesRepository>()
                 .AddScoped<Abstractions.IRoleCommandRepository, RoleCommandRepository>()
                 .AddScoped<Abstractions.IUserCommandsRepository, UserCommandsRepository>();
+        }
     }
 }
