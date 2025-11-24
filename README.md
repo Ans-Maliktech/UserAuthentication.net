@@ -1,108 +1,95 @@
-Secure User Identity Service (SUIS)
+# Secure User Identity Service (SUIS)
 
-Developed by: Ans Abdullah Malik
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-16%2B-DD0031?style=flat-square&logo=angular&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?style=flat-square&logo=microsoft-sql-server&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
-This repository contains a full-stack, decoupled Authentication and Authorization system built using ASP.NET Core (.NET 9) for the backend API and Angular for the Single Page Application (SPA) frontend.
+**Developed by: Ans Abdullah Malik**
 
-It implements a modern JWT (JSON Web Token)-based authentication flow, ensuring stateless and secure identity management for any consumer application.
+A production-ready, full-stack Authentication and Authorization system architected with .NET 9 and Angular. This solution provides a secure, decoupled foundation for identity management using JWT (JSON Web Tokens) and Role-Based Access Control (RBAC), migrated from in-memory storage to a persistent SQL Server database using Entity Framework Core.
 
-🚀 Key Features
+## Key Features
 
-Decoupled Architecture: Separate API and UI for flexible deployment.
+* **Clean Architecture:** Implements a strictly decoupled layered architecture (Core, Infrastructure, API) to ensure maintainability, testability, and separation of concerns.
+* **Secure Authentication:** Features a stateless JWT implementation with custom claims, secure signing, and expiration handling.
+* **Role-Based Access Control (RBAC):** granular permission management system distinguishing between standard Users and Administrators.
+* **Persistent Storage:** Fully integrated with SQL Server using Entity Framework Core 9.0, replacing previous in-memory implementations for production reliability.
+* **Result Pattern:** Utilizes a generic Result wrapper for consistent error handling and API response standardization.
+* **CORS Configuration:** Securely configured Cross-Origin Resource Sharing to facilitate seamless communication between the Angular SPA and .NET Web API.
 
-Persistent Database: Configured for SQL Server (LocalDB for development) using Entity Framework Core.
+## Technology Stack
 
-Role-Based Access Control (RBAC): Supports user roles for differentiated authorization.
+### Backend
+* **.NET 9 SDK** (C# 13)
+* **ASP.NET Core Web API**
+* **Entity Framework Core 9.0** (Code-First approach)
+* **SQL Server** (Relational Database)
+* **Swagger/OpenAPI** (API Documentation)
 
-CORS Configuration: Properly configured to allow secure communication between the Angular frontend and the ASP.NET Core backend on local development ports.
+### Frontend
+* **Angular** (Single Page Application)
+* **TypeScript**
+* **Bootstrap 5** (Responsive UI)
+* **RxJS** (Reactive Extensions for state management)
 
-🛠️ Prerequisites
+## Project Structure
 
-Before running the application, ensure you have the following installed:
+The solution adheres to clean architecture principles:
 
-.NET SDK 9.0 (or the latest version compatible with your project).
+src/
+├── Auth.Api/             # Application entry point, Controllers, and DI Configuration
+├── Auth.Core/            # Domain Entities, Interfaces, and shared Result logic
+├── Auth.Infrastructure/  # Database Context, EF Core Migrations, and Repository implementations
+└── Auth.Frontend/        # Angular Client Application
 
-Node.js and npm (LTS version is recommended).
+## Getting Started
 
-[SQL Server LocalDB] (usually installed with Visual Studio or SQL Server Express).
+Follow these instructions to set up the project locally for development and testing.
 
-📦 Project Structure
+### Prerequisites
+* .NET SDK 9.0
+* Node.js (LTS version)
+* SQL Server (Express, Developer, or LocalDB)
 
-The solution is divided into three main folders under src:
+### Step 1: Backend Setup
+1.  Clone the repository.
+2.  Navigate to the API directory:
+    cd src/Auth.Api
+3.  Configure the database connection string in `appsettings.json` to point to your local SQL Server instance.
+4.  Apply database migrations to create the schema:
+    dotnet ef database update --project ../Auth.Infrastructure
+5.  Start the API:
+    dotnet run
 
-Auth.Api: The ASP.NET Core API entry point. Handles routing, authentication middleware, and configuration.
+The API will initialize and listen on the configured local port (e.g., http://localhost:5166).
 
-Auth.Infrastructure: Contains database context, Entity Framework migrations, repositories, and service implementations.
+### Step 2: Frontend Setup
+1.  Navigate to the frontend directory:
+    cd ../Auth.Frontend
+2.  Install dependencies:
+    npm install
+3.  Launch the application:
+    ng serve --open
 
-Auth.Frontend: The Angular client application (SPA).
+The application will automatically open in your default browser at http://localhost:4200.
 
-⚙️ Setup and Running Locally
+## Testing & Verification
 
-Step 1: Backend Setup (Auth.Api)
+* **Swagger UI:** Access the interactive API documentation at `/swagger` on the API port.
+* **Registration:** Use the `/register` route on the frontend to create a new user entity.
+* **Persistence Check:** Verify data integrity by querying the `Users` table in SQL Server after restarting the application.
+* **Authentication:** Log in with valid credentials to receive a JWT and access protected routes on the dashboard.
 
-Navigate to the API Directory:
+## Configuration Notes
 
-cd D:\Projects\Authapi\AuthApi\src\Auth.Api
+* **JWT Secret:** The `Jwt:Key` in `appsettings.json` is a placeholder for development environments. For production deployment, ensure this is replaced with a secure, high-entropy key managed via environment variables or a secrets manager.
+* **CORS:** The current configuration explicitly trusts `localhost:4200`. Update the `CORS:urls` setting in `appsettings.json` to reflect your production client domain.
 
+## Contributing
 
-Install EF Core Tool (if necessary):
-If the dotnet ef command fails, you need to install the tool (or reference it locally, as discussed):
+Contributions are welcome. Please fork the repository and submit a Pull Request for review.
 
-dotnet tool install --global dotnet-ef
+## License
 
-
-Ensure SQL Server Package is Installed:
-If you faced errors before, use the explicit version for .NET 9.0:
-
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 9.0.0-rc.2.24529.15
-
-
-Apply Database Migrations:
-This command reads the schema and creates the AuthDb database and its tables on your LocalDB instance:
-
-dotnet ef database update
-
-
-Run the API:
-
-dotnet run
-
-
-The API should start and listen on http://localhost:5166.
-
-Step 2: Frontend Setup (Auth.Frontend)
-
-Navigate to the Frontend Directory:
-
-cd D:\Projects\Authapi\AuthApi\src\Auth.Frontend
-
-
-Install Dependencies:
-
-npm install
-
-
-Run the Angular Application:
-
-ng serve --open
-
-
-The frontend should open in your browser at http://localhost:4200.
-
-🧪 Testing and Verification
-
-Register: Navigate to the registration page (/register) and create a new user.
-
-Database Check: Because you have a persistent database, you can stop the API and restart it.
-
-Login: Log in with the account you just created.
-
-Dashboard: Successful login should redirect you to a dashboard showing the protected user information, confirming successful authentication and authorization.
-
-🔒 Configuration Notes
-
-Connection String: The default connection string is configured in Auth.Api/appsettings.json to use SQL Server LocalDB. This must be updated for any production or shared environment.
-
-JWT Key: The key in Auth.Api/appsettings.json is a placeholder. It must be updated to a secure, long, randomly generated key before deployment.
-
-CORS URLs: The CORS section is currently set to allow only localhost:4200. This must be updated to include the client's production domain when deployin
+Distributed under the MIT License. See `LICENSE.md` for more information.
