@@ -12,15 +12,18 @@ namespace Auth.Infrastructure.UseCases.User.Repositories
     internal sealed class UserQueriesRepository : Core.Abstractions.Repositories.IUserQueriesRepository, Abstractions.IUserQueriesRepository
     {
         private readonly UserContext _context;
+
         public UserQueriesRepository(UserContext userContext)
         {
             _context = Guard.Against.Null(userContext);
         }
+
         public async Task<Result<UserEntity>> FindUser(string username, CancellationToken cancellationToken)
         {
             var user = await _context.Users
                 .Include(x => x.Role)
-                .SingleOrDefaultAsync(x => x.Username.Equals(username));
+                .SingleOrDefaultAsync(x => x.Username.Equals(username), cancellationToken);
+
             return GetUserResult(user);
         }
 
@@ -28,7 +31,8 @@ namespace Auth.Infrastructure.UseCases.User.Repositories
         {
             var user = await _context.Users
                 .Include(x => x.Role)
-                .SingleOrDefaultAsync(x => x.Id.Equals(id));
+                .SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+
             return GetUserResult(user);
         }
 
@@ -36,12 +40,15 @@ namespace Auth.Infrastructure.UseCases.User.Repositories
         {
             return await _context.Users
                 .Include(x => x.Role)
-                .Select(x => x.Adapt<UserDto>()).ToListAsync();
+                .Select(x => x.Adapt<UserDto>())
+                .ToListAsync(cancellationToken);
         }
 
-        private Result<UserEntity> GetUserResult(UserEntity? user)
+        private static Result<UserEntity> GetUserResult(UserEntity? user)
         {
-            return user is not null ? Result.Ok(user) : Result.Fail<UserEntity>(DatabaseErrorMessages.UserNotExist);
+            return user is not null 
+                ? Result.Ok(user) 
+                : Result.Fail<UserEntity>(DatabaseErrorMessages.UserNotExist);
         }
     }
 }

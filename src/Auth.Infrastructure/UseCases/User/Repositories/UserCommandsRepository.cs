@@ -9,13 +9,15 @@ namespace Auth.Infrastructure.UseCases.User.Repositories
     internal sealed class UserCommandsRepository : Abstractions.IUserCommandsRepository
     {
         private readonly UserContext _context;
+
         public UserCommandsRepository(UserContext userContext)
         {
             _context = Guard.Against.Null(userContext);
         }
+
         public async Task<int> AddUser(UserEntity userEntity, CancellationToken cancellationToken)
         {
-            await _context.Users.AddAsync(userEntity);
+            await _context.Users.AddAsync(userEntity, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return userEntity.Id;
         }

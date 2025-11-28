@@ -1,17 +1,12 @@
-﻿using Auth.Core.Common; // This finds your new Result class
-using Auth.Infrastructure.UseCases.User.Entities; // This finds RoleEntity
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Auth.Infrastructure.UseCases.User.Entities;
+using FluentResults;
 
 namespace Auth.Infrastructure.Abstractions
 {
-    public interface IRoleQueriesRepository
+    internal interface IRoleQueriesRepository
     {
-        // 1. Must return Task<Result<RoleEntity>> to match your Repository
+        // These methods return the actual Database Entity (which Core layer cannot see)
         Task<Result<RoleEntity>> GetRoleEntity(string roleName, CancellationToken cancellationToken);
-
-        // 2. Must be present because your Repository implements it
         Task<IEnumerable<RoleEntity>> GetRoleEntities(CancellationToken cancellationToken);
     }
 }

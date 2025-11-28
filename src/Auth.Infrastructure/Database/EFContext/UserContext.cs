@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Infrastructure.Database.EFContext
 {
-    public class UserContext : DbContext
+    internal class UserContext : DbContext
     {
         public UserContext(DbContextOptions<UserContext> options) : base(options)
         {

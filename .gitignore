@@ -351,4 +351,7 @@ MigrationBackup/
 #Rider
 src/.idea/
 
-# Last updated: November 2025   
+# --- Custom Angular Additions ---
+/dist
+/.angular
+.vscode/
