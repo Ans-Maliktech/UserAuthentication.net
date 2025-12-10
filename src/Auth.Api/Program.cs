@@ -43,6 +43,9 @@ app.BuildAuthEndpoints();
 app.BuildUserEndpoints();
 app.BuildServiceEndpoints();
 
-app.ApplyDatabaseMigrations();
+using (var scope = app.Services.CreateScope())
+{
+    DatabaseExtensions.ApplyDatabaseMigrations(scope.ServiceProvider);
+}
 
 app.Run();

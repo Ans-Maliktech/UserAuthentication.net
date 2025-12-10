@@ -1,5 +1,4 @@
 using Auth.Infrastructure.Database.EFContext;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,13 +7,13 @@ namespace Auth.Infrastructure.Extensions
 {
     public static class DatabaseExtensions
     {
-        public static void ApplyDatabaseMigrations(this IApplicationBuilder app)
+        // Changed input from IApplicationBuilder (Web) to IServiceProvider (Generic)
+        public static void ApplyDatabaseMigrations(IServiceProvider serviceProvider)
         {
-            using var scope = app.ApplicationServices.CreateScope();
-            var services = scope.ServiceProvider;
             try
             {
-                var context = services.GetRequiredService<UserContext>();
+                var context = serviceProvider.GetRequiredService<UserContext>();
+                
                 if (context.Database.GetPendingMigrations().Any())
                 {
                     context.Database.Migrate();
@@ -22,7 +21,7 @@ namespace Auth.Infrastructure.Extensions
             }
             catch (Exception ex)
             {
-                var logger = services.GetRequiredService<ILogger<UserContext>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<UserContext>>();
                 logger.LogError(ex, "An error occurred while migrating the database.");
             }
         }
